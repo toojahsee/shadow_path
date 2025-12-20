@@ -4,25 +4,27 @@ on:
     branches: [ main, master ]
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    # 切换到 Ubuntu 20.04，这是构建 APK 最稳定的环境
+    runs-on: ubuntu-20.04
+    
     steps:
       - uses: actions/checkout@v4
       
-      # 1. 设置 Java 17 (Android SDK 需要)
+      # 1. Java 11 (对旧版 SDK 工具兼容性更好)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
-      # 2. 设置 Python 3.10
+      # 2. Python 3.8 (最稳妥的版本)
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.8'
 
-      # 3. 安装系统依赖 (这是最关键的一步，包含 SDL2 和构建工具)
-      - name: Install System Dependencies
+      # 3. 安装依赖 (Buildozer 官方推荐列表)
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -44,29 +46,35 @@ jobs:
             libgstreamer1.0 \
             gstreamer1.0-plugins-base \
             gstreamer1.0-plugins-good \
-            unzip \
-            zip \
             libltdl-dev \
             libffi-dev \
             libssl-dev \
             autoconf \
             libtool \
+            zip \
+            unzip \
             libncurses5 \
             libopenal-dev \
             libtinfo5
 
-      # 4. 安装 Buildozer
+      # 4. 安装 Buildozer (指定稳定版本)
       - name: Install Buildozer
         run: |
           pip install --upgrade pip
-          pip install buildozer cython==0.29.36
+          pip install buildozer cython==0.29.21
 
-      # 5. 开始打包 (使用 verbose 模式以便排错)
-      - name: Build with Buildozer
+      # 5. 清理旧构建 (防止缓存干扰)
+      - name: Cleanup
         run: |
-          buildozer -v android debug
+          rm -rf .buildozer
+          rm -rf bin
 
-      # 6. 上传 APK
+      # 6. 开始打包
+      - name: Build
+        run: |
+          yes | buildozer -v android debug
+
+      # 7. 上传结果
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
