@@ -15,7 +15,7 @@ jobs:
         env:
           BUILDOZER_WARN_ON_ROOT: 0
         with:
-          args: buildozer android debug
+          args: android debug
 
       # 这里的权限修复很重要，因为 Docker 可能会把文件所有者改成 root
       - name: Fix Permissions
