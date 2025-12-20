@@ -4,11 +4,11 @@ on:
     branches: [ main, master ]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Build with Buildozer
-        uses: mobitar/buildozer-action@v1
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
           command: buildozer android debug
           buildozer_version: master
