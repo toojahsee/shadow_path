@@ -45,7 +45,9 @@ jobs:
             libssl-dev \
             autoconf \
             libtool \
-            openjdk-17-jdk
+            libncurses5 \
+            libopenal-dev \
+            libtinfo5
 
       - name: Install Buildozer
         run: |
@@ -54,8 +56,8 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # Buildozer needs y/n confirmation for license
-          yes | buildozer android debug
+          # Run with verbose output to debug errors
+          yes | buildozer -v android debug
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
