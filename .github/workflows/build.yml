@@ -12,6 +12,8 @@ jobs:
       # 这能极大减少卡顿和出错的概率
       - name: Build with Buildozer (Docker)
         uses: docker://kivy/buildozer:latest
+        env:
+          BUILDOZER_WARN_ON_ROOT: 0
         with:
           args: buildozer android debug
 
