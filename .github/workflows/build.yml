@@ -4,18 +4,69 @@ on:
     branches: [ main, master ]
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      # 1. 设置 Java 17 (Android SDK 需要)
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          command: buildozer android debug
-          buildozer_version: master
-          workdir: .
+          distribution: 'temurin'
+          java-version: '17'
 
+      # 2. 设置 Python 3.10
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 3. 安装系统依赖 (这是最关键的一步，包含 SDL2 和构建工具)
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip \
+            build-essential \
+            git \
+            python3 \
+            python3-dev \
+            ffmpeg \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            zlib1g-dev \
+            libgstreamer1.0 \
+            gstreamer1.0-plugins-base \
+            gstreamer1.0-plugins-good \
+            unzip \
+            zip \
+            libltdl-dev \
+            libffi-dev \
+            libssl-dev \
+            autoconf \
+            libtool \
+            libncurses5 \
+            libopenal-dev \
+            libtinfo5
+
+      # 4. 安装 Buildozer
+      - name: Install Buildozer
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.36
+
+      # 5. 开始打包 (使用 verbose 模式以便排错)
+      - name: Build with Buildozer
+        run: |
+          buildozer -v android debug
+
+      # 6. 上传 APK
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:

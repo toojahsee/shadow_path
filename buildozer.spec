@@ -11,6 +11,8 @@ fullscreen = 1
 android.permissions = INTERNET,ACCESS_NETWORK_STATE
 android.archs = arm64-v8a, armeabi-v7a
 android.allow_backup = True
+# 关键修复：自动接受 SDK 许可
+android.accept_sdk_license = True
 
 [buildozer]
 log_level = 2
