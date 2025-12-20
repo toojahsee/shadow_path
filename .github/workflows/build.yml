@@ -8,12 +8,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -34,15 +40,23 @@ jobs:
             zlib1g-dev \
             libgstreamer1.0 \
             gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good
-          
-          # Install Buildozer and Cython
+            gstreamer1.0-plugins-good \
+            unzip \
+            zip \
+            libltdl-dev \
+            libffi-dev \
+            libssl-dev \
+            autoconf \
+            libtool
+
+      - name: Install Buildozer
+        run: |
           pip install --upgrade pip
-          pip install buildozer cython==0.29.33
+          pip install buildozer cython==0.29.36
 
       - name: Build with Buildozer
         run: |
-          # Accept SDK license automatically
+          # Buildozer needs y/n confirmation for license
           yes | buildozer android debug
 
       - name: Upload Artifact
