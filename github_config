@@ -1,6 +1,0 @@
-__pycache__/
-*.pyc
-.buildozer/
-bin/
-*.log
-.DS_Store
